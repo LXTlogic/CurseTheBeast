@@ -10,4 +10,10 @@ public partial class Contexts
     {
 
     }
+
+    [JsonSerializable(typeof(GenericRsp<MatchResult>))]
+    public partial class MatchResultContext : JsonSerializerContext
+    {
+
+    }
 }

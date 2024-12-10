@@ -9,7 +9,7 @@ public class FileEntry
     public string LocalTempPath { get; private init; }
     public string? DisplayName { get; private set; }
     public string? ArchiveEntryName { get; protected set; }
-    public string? Url { get; private set; }
+    public IReadOnlyList<string> Urls { get; private set; } = [];
     public bool Required { get; private set; } = true;
     public bool UnixExecutable { get; private set; } = false;
     public bool Unreachable { get; private set; } = false;
@@ -103,10 +103,15 @@ public class FileEntry
         return WithArchiveEntryName(entryName as IEnumerable<string?>);
     }
 
-    public FileEntry SetDownloadable(string displayName, string url)
+    public FileEntry SetDownloadable(string displayName, params string[] urls)
+    {
+        return SetDownloadable(displayName, urls as IReadOnlyList<string>);
+    }
+
+    public FileEntry SetDownloadable(string displayName, IReadOnlyList<string> urls)
     {
         DisplayName = displayName;
-        Url = url;
+        Urls = urls;
         Unreachable = false;
         return this;
     }

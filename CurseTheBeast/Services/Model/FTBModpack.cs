@@ -39,7 +39,7 @@ public class FTBModpack
     {
         public FTBFileEntry[] ServerFiles { get; init; } = null!;
         public FTBFileEntry[] ClientFullFiles { get; init; } = null!;
-        public FTBFileEntry[] ClientFilesWithoutCurseforgeMods { get; set; } = null!;
-        public FTBFileEntry[] ClientCurseforgeMods { get; set; } = null!;
+        public FTBFileEntry[] ClientFilesWithoutCurseforgeMods { get; init; } = null!;
+        public FTBFileEntry[] ClientCurseforgeMods { get; init; } = null!;
     }
 }

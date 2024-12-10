@@ -68,23 +68,24 @@ public class DownloadQueue : IDisposable
             await downloadFile(file, buffer, ct);
 
             if (!file.Unreachable && !file.ValidateTempAndApply())
-                throw new Exception($"文件校验失败: {file.Url}");
+                throw new Exception($"文件校验失败: {file.Urls[0]}");
             TaskFinished?.Invoke(file);
         }
     }
 
     async ValueTask downloadFile(FileEntry file, Memory<byte> buffer, CancellationToken ct)
     {
-        if (file.Url == null)
+        if (file.Urls.Count == 0)
             throw new Exception($"文件 {file.DisplayName ?? file.LocalPath} 无Url，无法下载");
 
-        var uriList = MirrorManager.GetUrls(new Uri(file.Url!)).ToArray();
+        var uriList = file.Urls.SelectMany(url => MirrorManager.GetUrls(new Uri(url))).ToArray();
         for (var i = 1; ; i++)
         {
             var cli = _cliPool.Take(ct);
+            var uri = uriList[Math.Min(uriList.Length, i) - 1];
             try
             {
-                using var rsp = await cli.GetAsync(uriList[Math.Min(uriList.Length, i) - 1], HttpCompletionOption.ResponseHeadersRead, ct);
+                using var rsp = await cli.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, ct);
                 rsp.EnsureSuccessStatusCode();
                 using var rspStream = rsp.Content.ReadAsStream(ct);
                 using var fs = File.Create(file.LocalTempPath);
@@ -128,7 +129,7 @@ public class DownloadQueue : IDisposable
                         else if (((int)hre.StatusCode.Value) / 100 == 4)
                         {
                             if (file.Required)
-                                throw new Exception($"文件下载失败（${(int)hre.StatusCode}）: {file.Url} ，请重试几次，或打开\u68AF\u5B50再试", ex);
+                                throw new Exception($"文件下载失败（${(int)hre.StatusCode}）: {uri} ，请重试几次，或打开\u68AF\u5B50再试", ex);
                             else
                                 file.SetUnreachable();
                             break;
@@ -139,7 +140,7 @@ public class DownloadQueue : IDisposable
                 cli.Dispose();
                 cli = getHttpClient();
                 if (i >= TryTimes)
-                    throw new Exception($"文件下载失败: {file.Url} ，请重试几次，或打开\u68AF\u5B50再试", ex);
+                    throw new Exception($"文件下载失败: {uri} ，请重试几次，或打开\u68AF\u5B50再试", ex);
                 else
                     await Task.Delay(TimeSpan.FromSeconds(2), ct);
             }
@@ -162,7 +163,7 @@ public class DownloadQueue : IDisposable
         })
         {
             Timeout = TimeSpan.FromSeconds(ConnectionTimeout),
-            DefaultRequestVersion = HttpVersion.Version11
+            DefaultRequestVersion = HttpVersion.Version20
         };
         cli.DefaultRequestHeaders.TryAddWithoutValidation("Accept", Accept);
         cli.DefaultRequestHeaders.UserAgent.ParseAdd(HttpConfigService.UserAgent);

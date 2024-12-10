@@ -48,7 +48,7 @@ public abstract class BaseApiClient : IDisposable
         var client = new HttpClient(handler)
         {
             Timeout = TimeSpan.FromMilliseconds(_timeout),
-            DefaultRequestVersion = HttpVersion.Version30,
+            DefaultRequestVersion = HttpVersion.Version20,
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
         };
 

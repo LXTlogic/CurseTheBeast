@@ -33,16 +33,12 @@ public partial class ModpackManifest : FTBRsp
 
     public class File
     {
-        public string version { get; init; } = null!;
         /// <summary>
         /// ./config/Advancedperipherals/
         /// </summary>
         public string path { get; init; } = null!;
-        public string? url { get; init; } = null!;
-        /*
-        public object[] mirrors { get; init; } = null!;
-        */
-        public string sha1 { get; init; } = null!;
+        public string url { get; init; } = null!;
+        public string[] mirrors { get; init; } = null!;
         public int size { get; init; }
         /*
         public object[] tags { get; init; } = null!;
@@ -60,13 +56,13 @@ public partial class ModpackManifest : FTBRsp
         /// </summary>
         public string type { get; init; } = null!;
         public long updated { get; init; }
-        public Curseforge? curseforge { get; init; }
+        public FileHash hashes { get; init; } = null!;
 
 
-        public class Curseforge
+        public class FileHash
         {
-            public long project { get; init; }
-            public long file { get; init; }
+            public string sha1 { get; init; } = null!;
+            public long cfMurmur { get; init; }
         }
     }
 

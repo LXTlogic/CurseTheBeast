@@ -1,6 +1,5 @@
 ﻿using CurseTheBeast.Api.FTB.Model;
 using CurseTheBeast.Storage;
-using CurseTheBeast.Utils;
 
 namespace CurseTheBeast.Services.Model;
 
@@ -9,13 +8,18 @@ public class FTBFileEntry : FileEntry
 {
     public long Id { get; }
     public FileSide Side { get; }
-    public CurseforgeInfo? Curseforge { get; }
+    public CurseforgeInfo? Curseforge { get; private set; }
+    public string Type { get; }
+    public long CFMurmur { get; }
 
     public FTBFileEntry(ModpackManifest.File file)
         : base(RepoType.Asset, getAssetCachePath(file.id))
     {
         Id = file.id;
-        WithSha1(file.sha1);
+        CFMurmur = file.hashes.cfMurmur;
+        Type = file.type;
+
+        WithSha1(file.hashes.sha1);
         WithSize(file.size);
         WithArchiveEntryName(file.path, file.name);
 
@@ -23,9 +27,7 @@ public class FTBFileEntry : FileEntry
             && ArchiveEntryName.EndsWith(".jar.disabled", StringComparison.OrdinalIgnoreCase))
             ArchiveEntryName = ArchiveEntryName.Remove(ArchiveEntryName.Length - 9);
 
-        var url = !string.IsNullOrWhiteSpace(file.url) ? file.url
-           : CurseforgeUtils.GetDownloadUrl(file.curseforge!.file,file.name);
-        SetDownloadable(file.name, url);
+        SetDownloadable(file.name, [file.url, ..file.mirrors]);
         // 有些mod删库跑路，跳过下载交给用户处理
         SetUnrequired();
 
@@ -35,16 +37,21 @@ public class FTBFileEntry : FileEntry
             { clientonly: true } => FileSide.Client,
             _ => FileSide.Both,
         };
-        Curseforge = file.curseforge == null ? null : new CurseforgeInfo()
+    }
+
+    public FTBFileEntry WithCurseforgeInfo(long projectId, long fileId)
+    {
+        Curseforge = new CurseforgeInfo()
         {
-            ProjectId = file.curseforge.project,
-            FileId = file.curseforge.file
+            ProjectId = projectId,
+            FileId = fileId
         };
+        return this;
     }
 
     static string[] getAssetCachePath(long id)
     {
-        return new[] { ((byte)(id & 0xFF)).ToString("x2"), id.ToString("x2") };
+        return [((byte)(id & 0xFF)).ToString("x2"), id.ToString("x2")];
     }
 
     public class CurseforgeInfo

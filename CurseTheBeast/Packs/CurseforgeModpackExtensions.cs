@@ -57,7 +57,7 @@ public static class CurseforgeModpackExtensions
         var unreachableFiles = new JsonArray(pack.Files.ClientFullFiles.Where(f => f.Unreachable).Select(f => new JsonObject()
         {
             ["path"] = f.ArchiveEntryName,
-            ["url"] = f.Url,
+            ["urls"] = new JsonArray(f.Urls.Select(url => JsonValue.Create(url)).ToArray()),
             ["curseforge"] = f.Curseforge == null ? null : new JsonObject()
             {
                 ["projectId"] = f.Curseforge.ProjectId,

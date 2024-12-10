@@ -102,7 +102,7 @@ public class DefaultCommand : AsyncCommand
     {
         var server = prompt("选择整合包类型:", "客户端 - 用来玩", "服务端 - 用来开服") == 1;
         var full = server || prompt("选择下载类型:", "标准包 - 下载快，体积小", "完整包 - 安装快") == 1;
-        var preinstall = server && prompt($"是否预安装服务端，并且同意MC用户协议：https://aka.ms/MinecraftEULA",
+        var preinstall = server && prompt($"是否预安装服务端，并且同意 MC 用户协议：https://aka.ms/MinecraftEULA",
             "是，并且同意该协议",
             "否，稍后手动安装") == 0;
         var output = Environment.CurrentDirectory;

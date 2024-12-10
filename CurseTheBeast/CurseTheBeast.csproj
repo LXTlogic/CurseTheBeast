@@ -8,7 +8,7 @@
     <Platforms>x64;ARM64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CompilerGeneratedFilesOutputPath>GeneratedFiles</CompilerGeneratedFilesOutputPath>
-    <Version>0.5.12</Version>
+    <Version>0.6</Version>
     <Authors>TomatoPuddin</Authors>
     <Company>TomatoPuddin</Company>
     <Product>CurseTheBeast</Product>

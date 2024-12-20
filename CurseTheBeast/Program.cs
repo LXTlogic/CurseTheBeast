@@ -11,6 +11,7 @@ using Spectre.Console.Cli;
 Console.BackgroundColor = ConsoleColor.Black;
 Console.Title = $"{AppInfo.Name} v{AppInfo.Version} - {AppInfo.Author}";
 LocalStorage.PruneUnusedTemp();
+LocalStorage.Persistent.CleanLegacyAssetCache();
 
 var app = new CommandApp();
 app.Configure(config =>

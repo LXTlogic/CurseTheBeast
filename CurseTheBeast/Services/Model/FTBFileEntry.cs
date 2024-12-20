@@ -6,16 +6,14 @@ namespace CurseTheBeast.Services.Model;
 
 public class FTBFileEntry : FileEntry
 {
-    public long Id { get; }
     public FileSide Side { get; }
     public CurseforgeInfo? Curseforge { get; private set; }
     public string Type { get; }
     public long CFMurmur { get; }
 
     public FTBFileEntry(ModpackManifest.File file)
-        : base(RepoType.Asset, getAssetCachePath(file.id))
+        : base(RepoType.AssetV2, getAssetCachePath(file.hashes.sha1))
     {
-        Id = file.id;
         CFMurmur = file.hashes.cfMurmur;
         Type = file.type;
 
@@ -49,9 +47,10 @@ public class FTBFileEntry : FileEntry
         return this;
     }
 
-    static string[] getAssetCachePath(long id)
+    static string[] getAssetCachePath(string sha1)
     {
-        return [((byte)(id & 0xFF)).ToString("x2"), id.ToString("x2")];
+        sha1 = sha1.ToLower();
+        return [sha1[..2], sha1[2..]];
     }
 
     public class CurseforgeInfo

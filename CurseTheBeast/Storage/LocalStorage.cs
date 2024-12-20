@@ -165,6 +165,22 @@ public class LocalStorage : IDisposable
         }
     }
 
+    public void CleanLegacyAssetCache()
+    {
+        var dir = GetFilePath(RepoType.Asset);
+        if (Directory.Exists(dir))
+        {
+            Focused.Status("清理失效的旧版缓存", ctx =>
+            {
+                try
+                {
+                    Directory.Delete(dir, true);
+                }
+                catch (Exception) { }
+            });
+        }
+    }
+
     public void Dispose()
     {
         if(!_isPersistent)

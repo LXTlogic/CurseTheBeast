@@ -46,7 +46,6 @@ public partial class ModpackManifest : FTBRsp
         public bool clientonly { get; init; }
         public bool serveronly { get; init; }
         public bool optional { get; init; }
-        public long id { get; init; }
         /// <summary>
         /// peripherals.toml
         /// </summary>
